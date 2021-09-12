@@ -7,6 +7,7 @@ const loadPlugins = require('gulp-load-plugins'); // 自动加载需要的插件
 const del = require('del');
 const browsersync = require("browser-sync").create();
 const minimist = require('minimist');
+const { merge } = require('lodash');
 
 const cwd = process.cwd()
 const plugins = loadPlugins();
@@ -30,7 +31,7 @@ let config = {
 
 try {
   const loadConfig = require(`${cwd}/gulp-auto.config.js`);
-  config = Object.assign({}, config, loadConfig);
+  config = merge({}, config, loadConfig);
 
 } catch (e) {
   console.log('If you not provide gulp-auto.config.js will use default config');
@@ -109,7 +110,7 @@ const complieJs = () => {
 // 转换包含模板语法的html文件
 const complieHtml = () => {
   return src(config.build.paths.pages, { base: config.build.src, cwd: config.build.src })
-    .pipe(plugins.swig({data, defaults: { cache: false }}))
+    .pipe(plugins.swig({data: config.data, defaults: { cache: false }}))
     .pipe(dest(config.build.temp))
     .pipe(browsersync.reload({ stream: true }))
 }
